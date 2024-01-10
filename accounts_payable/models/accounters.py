@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Numeric
 from shared.dbhandler import Base
 
 
@@ -8,5 +8,5 @@ class Accounters(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     description = Column(String(30))
-    value = Column(Float(10, 3))
+    value = Column(Numeric)
     account_type = Column(String(30))

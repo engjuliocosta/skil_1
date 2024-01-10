@@ -1,8 +1,10 @@
+import enum
+from decimal import Decimal
 from typing import List
 
 from fastapi import APIRouter
 from fastapi import Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from accounts_payable.models.accounters import Accounters as Acc
@@ -17,18 +19,23 @@ class AccountsPayableResponse(BaseModel):
     """Data model for accounts_payable."""
     id: int
     description: str
-    value: float
-    account_type: str
+    value: Decimal
+    account_type: str  # TODO: Implementar enum?
 
     class Config:
         orm_mode = True
 
 
+class AccountsPayableTypeEnum(str, enum.Enum):
+    PAYD = "payd"
+    RECEIVER = "receiver"
+
+
 class AccountsPayableRequest(BaseModel):
     """Data model for accounts created for payment."""
-    description: str
-    value: float
-    account_type: str
+    description: str = Field(min_length=3, max_length=30)
+    value: Decimal = Field(gt=0)
+    account_type: AccountsPayableTypeEnum = Field(min_length=3, max_length=30)
 
 
 @router.get("/", response_model=List[AccountsPayableResponse])
