@@ -119,6 +119,7 @@ def test_return_error_account_type_is_greater_than_30():
     response = client.post("/accounts_payable", json=account)
     assert response.status_code == 422
 
+
 def teste_return_error_when_value_is_zero():
     """Must test return error when value is zero."""
     Base.metadata.drop_all(bind=engine)
@@ -131,3 +132,23 @@ def teste_return_error_when_value_is_zero():
     }
     response = client.post("/accounts_payable", json=account)
     assert response.status_code == 422
+
+
+def test_update_account_payable():
+    """Must test update account."""
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    response = client.post("/accounts_payable",
+                           json={"description": "casa",
+                                 "value": 600,
+                                 "account_type": "essential"})
+
+    id_account = response.json()["id"]
+
+    client.put("/accounts_payable" / {id_account},
+               json={"description": "casa",
+                     "value": 111,
+                     "account_type": "essential"})
+
+    assert response.status_code == 200

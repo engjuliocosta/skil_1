@@ -10,6 +10,8 @@ from sqlalchemy.orm import Session
 from accounts_payable.models.accounters import Accounters as Acc
 from shared.dependencies import get_db
 
+# TODO: Refatorar o código todo para utilizar o Pydantic
+
 router = APIRouter(
     prefix='/accounts_payable',
 )
@@ -57,6 +59,24 @@ def create_accounts_payable(account: AccountsPayableRequest,
         **{}
     )
 
+    db.add(account_payd)
+    db.commit()
+    db.refresh(account_payd)
+
+    return account_payd
+
+
+@router.put("/{id_account}", response_model=AccountsPayableResponse, status_code=200)
+def create_accounts_payable(id_account: int,
+                            account: AccountsPayableRequest,
+                            db: Session = Depends(get_db)) -> AccountsPayableResponse:
+    """Create accounts_payable:
+        :post: /accounts_payable"""
+    account = db.query(Acc).get(id_account)
+    account_payd = Acc(
+        **account.dict()
+    )
+    # Referencia a tabela do banco
     db.add(account_payd)
     db.commit()
     db.refresh(account_payd)
